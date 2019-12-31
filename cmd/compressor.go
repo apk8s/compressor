@@ -19,11 +19,10 @@ var (
 )
 
 func main() {
-
 	var (
-		fromBucket    = flag.String("f", "", "From bucket.")
-		toBucket      = flag.String("t", "", "To bucket.")
-		fromObjectKey = flag.String("k", "", "From key.")
+		fmBucket = flag.String("f", "", "From bucket.")
+		toBucket = flag.String("t", "", "To bucket.")
+		fmObjKey = flag.String("k", "", "From key.")
 	)
 	flag.Parse()
 
@@ -32,14 +31,16 @@ func main() {
 		useSSL = false
 	}
 
-	mc, err := minio.New(endpoint, accessKeyID, accessKeySecret, useSSL)
+	mc, err := minio.New(
+		endpoint, accessKeyID,
+		accessKeySecret, useSSL)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	obj, err := mc.GetObject(
-		*fromBucket,
-		*fromObjectKey,
+		*fmBucket,
+		*fmObjKey,
 		minio.GetObjectOptions{},
 	)
 	if err != nil {
@@ -47,8 +48,8 @@ func main() {
 	}
 
 	log.Printf("Starting download stream %s/%s.",
-		*fromBucket,
-		*fromObjectKey)
+		*fmBucket,
+		*fmObjKey)
 
 	// synchronous in-memory pipe
 	pipeR, pipeW := io.Pipe()
@@ -77,7 +78,7 @@ func main() {
 	// the gzip buffer flushes
 	log.Print("BEGIN PutObject")
 	_, err = mc.PutObject(
-		*toBucket, *fromObjectKey+".gz",
+		*toBucket, *fmObjKey+".gz",
 		pipeR, -1, minio.PutObjectOptions{})
 	if err != nil {
 		log.Fatalln(err)

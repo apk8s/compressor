@@ -10,7 +10,8 @@ RUN CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64 \
     GO111MODULE=on \
-    go build -ldflags "-extldflags -static" -o /go/bin/compressor /go/src/cmd
+    go build -ldflags "-extldflags -static" \
+        -o /go/bin/compressor /go/src/cmd
 
 RUN echo "nobody:x:65534:65534:Nobody:/:" > /etc_passwd
 
